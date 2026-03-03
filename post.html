@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inlägg</title>
+  <style>
+    body { font-family: Georgia, serif; max-width: 800px; margin: 0 auto; padding: 2rem; }
+    h1 { font-size: 2rem; margin-bottom: 0.5rem; }
+    .ingress { font-size: 1.2rem; color: #555; margin-bottom: 2rem; }
+    .content h2 { font-size: 1.5rem; margin-top: 2rem; }
+    .content p { line-height: 1.8; }
+    time { font-size: 0.85rem; color: #999; }
+    a { color: #0066cc; }
+  </style>
+</head>
+<body>
+  <a href="index.html">← Tillbaka</a>
+  <div id="post">Laddar...</div>
+
+  <script>
+    const SUPABASE_URL = 'DIN_SUPABASE_URL';
+    const SUPABASE_KEY = 'DIN_SUPABASE_ANON_KEY';
+
+    async function loadPost() {
+      const id = new URLSearchParams(window.location.search).get('id');
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/blog_posts?id=eq.${id}&select=*`, {
+        headers: {
+          'apikey': SUPABASE_KEY,
+          'Authorization': `Bearer ${SUPABASE_KEY}`
+        }
+      });
+      const posts = await res.json();
+      const post = posts[0];
+      document.title = post.title;
+      document.getElementById('post').innerHTML = `
+        <h1>${post.title}</h1>
+        <p class="ingress">${post.ingress}</p>
+        <time>${new Date(post.published_at).toLocaleDateString('sv-SE')}</time>
+        <div class="content">${post.body_html}</div>
+      `;
+    }
+
+    loadPost();
+  </script>
+</body>
+</html>
