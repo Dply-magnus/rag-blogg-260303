@@ -7,12 +7,14 @@
   <style>
     body { font-family: Georgia, serif; max-width: 800px; margin: 0 auto; padding: 2rem; }
     h1 { font-size: 2rem; margin-bottom: 2rem; }
-    .post { border-bottom: 1px solid #eee; padding: 1.5rem 0; }
+    .post { border-bottom: 1px solid #eee; padding: 1.5rem 0; display: flex; gap: 1.5rem; }
+    .post-text { flex: 1; }
     .post h2 { margin: 0 0 0.5rem; }
     .post h2 a { text-decoration: none; color: #1a1a1a; }
     .post h2 a:hover { color: #0066cc; }
     .post p { color: #555; margin: 0.5rem 0; }
     .post time { font-size: 0.85rem; color: #999; }
+    .post-thumb { width: 150px; height: 100px; object-fit: cover; border-radius: 4px; flex-shrink: 0; }
   </style>
 </head>
 <body>
@@ -32,9 +34,12 @@
       const container = document.getElementById('posts');
       container.innerHTML = posts.map(post => `
         <article class="post">
-          <h2><a href="post.html?id=${post.id}">${post.title}</a></h2>
-          <p>${post.ingress}</p>
-          <time>${new Date(post.published_at).toLocaleDateString('sv-SE')}</time>
+          ${post.image_url ? `<img src="${post.image_url}" alt="${post.title}" class="post-thumb">` : ''}
+          <div class="post-text">
+            <h2><a href="post.html?id=${post.id}">${post.title}</a></h2>
+            <p>${post.ingress}</p>
+            <time>${new Date(post.published_at).toLocaleDateString('sv-SE')}</time>
+          </div>
         </article>
       `).join('');
     }
