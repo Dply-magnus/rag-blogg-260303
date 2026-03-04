@@ -1,4 +1,15 @@
+remote_theme: mmistakes/minimal-mistakes
+plugins:
+  - jekyll-remote-theme
+
 title: AI-blogg
 description: Tankar och insikter om artificiell intelligens
-theme: minima
-lang: sv
+locale: sv-SE
+
+minimal_mistakes_skin: default
+
+defaults:
+  - scope:
+      path: ""
+    values:
+      layout: default
