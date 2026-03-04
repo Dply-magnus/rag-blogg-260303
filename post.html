@@ -18,16 +18,14 @@
   <a href="index.html">← Tillbaka</a>
   <div id="post">Laddar...</div>
 
+  <script src="config.js"></script>
   <script>
-    const SUPABASE_URL = 'DIN_SUPABASE_URL';
-    const SUPABASE_KEY = 'DIN_SUPABASE_ANON_KEY';
-
     async function loadPost() {
       const id = new URLSearchParams(window.location.search).get('id');
       const res = await fetch(`${SUPABASE_URL}/rest/v1/blog_posts?id=eq.${id}&select=*`, {
         headers: {
-          'apikey': SUPABASE_KEY,
-          'Authorization': `Bearer ${SUPABASE_KEY}`
+          'apikey': SUPABASE_ANON_KEY,
+          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
         }
       });
       const posts = await res.json();
