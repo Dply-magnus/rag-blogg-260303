@@ -3,23 +3,40 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="En modern blogg om AI, teknologi och innovation.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="AI-blogg">
+  <meta property="og:description" content="En modern blogg om AI, teknologi och innovation.">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='75' font-size='75' font-weight='bold' fill='black'>m</text></svg>">
   <title>AI-blogg</title>
-  <style>
-    body { font-family: Georgia, serif; max-width: 800px; margin: 0 auto; padding: 2rem; }
-    h1 { font-size: 2rem; margin-bottom: 2rem; }
-    .post { border-bottom: 1px solid #eee; padding: 1.5rem 0; display: flex; gap: 1.5rem; }
-    .post-text { flex: 1; }
-    .post h2 { margin: 0 0 0.5rem; }
-    .post h2 a { text-decoration: none; color: #1a1a1a; }
-    .post h2 a:hover { color: #0066cc; }
-    .post p { color: #555; margin: 0.5rem 0; }
-    .post time { font-size: 0.85rem; color: #999; }
-    .post-thumb { width: 150px; height: 100px; object-fit: cover; border-radius: 4px; flex-shrink: 0; }
-  </style>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>AI-blogg</h1>
-  <div id="posts">Laddar inlägg...</div>
+  <header>
+    <nav>
+      <div class="logo">AI-blogg</div>
+      <ul class="nav-links">
+        <li><a href="index.html" class="nav-link active">Alla inlägg</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <h1>AI-blogg</h1>
+      <p>Tankar och insikter om artificiell intelligens, teknologi och innovation</p>
+    </section>
+
+    <section class="posts-grid" id="posts-grid">
+      <p>Laddar inlägg...</p>
+    </section>
+  </main>
+
+  <footer>
+    <div class="footer-content">
+      <p>&copy; 2026 AI-blogg. Alla rättigheter förbehållna.</p>
+    </div>
+  </footer>
 
   <script src="config.js"></script>
   <script>
@@ -31,14 +48,16 @@
         }
       });
       const posts = await res.json();
-      const container = document.getElementById('posts');
+      const container = document.getElementById('posts-grid');
       container.innerHTML = posts.map(post => `
-        <article class="post">
-          ${post.image_url ? `<img src="${post.image_url}" alt="${post.title}" class="post-thumb">` : ''}
-          <div class="post-text">
-            <h2><a href="post.html?id=${post.id}">${post.title}</a></h2>
+        <article class="post-card" onclick="location.href='post.html?id=${post.id}'">
+          ${post.image_url ? `<img src="${post.image_url}" alt="${post.title}" class="post-card-image" loading="lazy">` : ''}
+          <div class="post-card-content">
+            <div class="post-card-meta">
+              <span class="post-card-date">${new Date(post.published_at).toLocaleDateString('sv-SE')}</span>
+            </div>
+            <h2>${post.title}</h2>
             <p>${post.ingress}</p>
-            <time>${new Date(post.published_at).toLocaleDateString('sv-SE')}</time>
           </div>
         </article>
       `).join('');
