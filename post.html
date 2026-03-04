@@ -1,81 +1,48 @@
-<!DOCTYPE html>
-<html lang="sv">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="">
-  <meta property="og:type" content="article">
-  <meta property="og:title" content="">
-  <meta property="og:description" content="">
-  <meta property="og:image" content="">
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='75' font-size='75' font-weight='bold' fill='black'>m</text></svg>">
-  <title>Inlägg</title>
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
-  <header>
-    <nav>
-      <div class="logo">AI-blogg</div>
-      <ul class="nav-links">
-        <li><a href="index.html" class="nav-link">Alla inlägg</a></li>
-      </ul>
-    </nav>
-  </header>
+---
+layout: default
+title: Inlägg
+---
 
-  <main>
-    <div id="post">
-      <p>Laddar...</p>
-    </div>
-  </main>
+<div id="post" class="page">
+  <p>Laddar...</p>
+</div>
 
-  <footer>
-    <div class="footer-content">
-      <p>&copy; 2026 AI-blogg. Alla rättigheter förbehållna.</p>
-    </div>
-  </footer>
-
-  <script src="config.js"></script>
-  <script>
-    async function loadPost() {
-      const id = new URLSearchParams(window.location.search).get('id');
-      const res = await fetch(`${SUPABASE_URL}/rest/v1/blog_posts?id=eq.${id}&select=*`, {
-        headers: {
-          'apikey': SUPABASE_ANON_KEY,
-          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
-        }
-      });
-      const posts = await res.json();
-      const post = posts[0];
-
-      document.title = post.title + ' | AI-blogg';
-      document.querySelector('meta[name="description"]').content = post.ingress;
-      document.querySelector('meta[property="og:title"]').content = post.title;
-      document.querySelector('meta[property="og:description"]').content = post.ingress;
-      if (post.image_url) {
-        document.querySelector('meta[property="og:image"]').content = post.image_url;
+<script src="config.js"></script>
+<script>
+  async function loadPost() {
+    const id = new URLSearchParams(window.location.search).get('id');
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/blog_posts?id=eq.${id}&select=*`, {
+      headers: {
+        'apikey': SUPABASE_ANON_KEY,
+        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
       }
+    });
+    const posts = await res.json();
+    const post = posts[0];
 
-      document.getElementById('post').innerHTML = `
-        <a href="index.html" class="back-link">← Tillbaka till alla inlägg</a>
+    document.title = post.title + ' | AI-blogg';
 
-        <article class="article-header">
-          <div class="article-meta">
-            <div class="article-meta-item">
-              <strong>${new Date(post.published_at).toLocaleDateString('sv-SE')}</strong>
-            </div>
-          </div>
-        </article>
+    document.getElementById('post').innerHTML = `
+      <article class="page" itemscope itemtype="https://schema.org/BlogPosting">
+        <meta itemprop="headline" content="${post.title}">
+        <div class="page__inner-wrap">
+          <header>
+            <h1 class="page__title" itemprop="headline">${post.title}</h1>
+            <p class="page__meta">
+              <time datetime="${post.published_at}">${new Date(post.published_at).toLocaleDateString('sv-SE')}</time>
+            </p>
+          </header>
+          <section class="page__content" itemprop="text">
+            ${post.image_url ? `<figure>
+              <img src="${post.image_url}" alt="${post.title}" class="align-center">
+            </figure>` : ''}
+            <p><em>${post.ingress}</em></p>
+            ${post.body_html}
+          </section>
+        </div>
+      </article>
+    `;
+  }
 
-        <article class="article-content">
-          <h1>${post.title}</h1>
-          ${post.image_url ? `<img src="${post.image_url}" alt="${post.title}" class="article-featured-image" loading="lazy">` : ''}
-          <p class="ingress" style="font-size: 1.2rem; color: #555; margin-bottom: 2rem;">${post.ingress}</p>
-          <div>${post.body_html}</div>
-        </article>
-      `;
-    }
-
-    loadPost();
-  </script>
-</body>
-</html>
+  loadPost();
+</script>
