@@ -3,21 +3,36 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="">
+  <meta property="og:description" content="">
+  <meta property="og:image" content="">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='75' font-size='75' font-weight='bold' fill='black'>m</text></svg>">
   <title>Inlägg</title>
-  <style>
-    body { font-family: Georgia, serif; max-width: 800px; margin: 0 auto; padding: 2rem; }
-    h1 { font-size: 2rem; margin-bottom: 0.5rem; }
-    .ingress { font-size: 1.2rem; color: #555; margin-bottom: 2rem; }
-    .featured-image { width: 100%; max-height: 400px; object-fit: cover; border-radius: 6px; margin: 1rem 0 1.5rem; }
-    .content h2 { font-size: 1.5rem; margin-top: 2rem; }
-    .content p { line-height: 1.8; }
-    time { font-size: 0.85rem; color: #999; }
-    a { color: #0066cc; }
-  </style>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <a href="index.html">← Tillbaka</a>
-  <div id="post">Laddar...</div>
+  <header>
+    <nav>
+      <div class="logo">AI-blogg</div>
+      <ul class="nav-links">
+        <li><a href="index.html" class="nav-link">Alla inlägg</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <div id="post">
+      <p>Laddar...</p>
+    </div>
+  </main>
+
+  <footer>
+    <div class="footer-content">
+      <p>&copy; 2026 AI-blogg. Alla rättigheter förbehållna.</p>
+    </div>
+  </footer>
 
   <script src="config.js"></script>
   <script>
@@ -31,13 +46,32 @@
       });
       const posts = await res.json();
       const post = posts[0];
-      document.title = post.title;
+
+      document.title = post.title + ' | AI-blogg';
+      document.querySelector('meta[name="description"]').content = post.ingress;
+      document.querySelector('meta[property="og:title"]').content = post.title;
+      document.querySelector('meta[property="og:description"]').content = post.ingress;
+      if (post.image_url) {
+        document.querySelector('meta[property="og:image"]').content = post.image_url;
+      }
+
       document.getElementById('post').innerHTML = `
-        <h1>${post.title}</h1>
-        <p class="ingress">${post.ingress}</p>
-        <time>${new Date(post.published_at).toLocaleDateString('sv-SE')}</time>
-        ${post.image_url ? `<img src="${post.image_url}" alt="${post.title}" class="featured-image">` : ''}
-        <div class="content">${post.body_html}</div>
+        <a href="index.html" class="back-link">← Tillbaka till alla inlägg</a>
+
+        <article class="article-header">
+          <div class="article-meta">
+            <div class="article-meta-item">
+              <strong>${new Date(post.published_at).toLocaleDateString('sv-SE')}</strong>
+            </div>
+          </div>
+        </article>
+
+        <article class="article-content">
+          <h1>${post.title}</h1>
+          ${post.image_url ? `<img src="${post.image_url}" alt="${post.title}" class="article-featured-image" loading="lazy">` : ''}
+          <p class="ingress" style="font-size: 1.2rem; color: #555; margin-bottom: 2rem;">${post.ingress}</p>
+          <div>${post.body_html}</div>
+        </article>
       `;
     }
 
