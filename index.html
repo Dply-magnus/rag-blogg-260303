@@ -1,69 +1,43 @@
-<!DOCTYPE html>
-<html lang="sv">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="En modern blogg om AI, teknologi och innovation.">
-  <meta property="og:type" content="website">
-  <meta property="og:title" content="AI-blogg">
-  <meta property="og:description" content="En modern blogg om AI, teknologi och innovation.">
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='75' font-size='75' font-weight='bold' fill='black'>m</text></svg>">
-  <title>AI-blogg</title>
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
-  <header>
-    <nav>
-      <div class="logo">AI-blogg</div>
-      <ul class="nav-links">
-        <li><a href="index.html" class="nav-link active">Alla inlägg</a></li>
-      </ul>
-    </nav>
-  </header>
+---
+layout: default
+title: AI-blogg
+---
 
-  <main>
-    <section class="hero">
-      <h1>AI-blogg</h1>
-      <p>Tankar och insikter om artificiell intelligens, teknologi och innovation</p>
-    </section>
+<div class="archive">
+  <h1 class="archive__title">Senaste inläggen</h1>
+  <div id="posts-grid" class="entries-list">
+    <p>Laddar inlägg...</p>
+  </div>
+</div>
 
-    <section class="posts-grid" id="posts-grid">
-      <p>Laddar inlägg...</p>
-    </section>
-  </main>
-
-  <footer>
-    <div class="footer-content">
-      <p>&copy; 2026 AI-blogg. Alla rättigheter förbehållna.</p>
-    </div>
-  </footer>
-
-  <script src="config.js"></script>
-  <script>
-    async function loadPosts() {
-      const res = await fetch(`${SUPABASE_URL}/rest/v1/blog_posts?select=*&order=published_at.desc`, {
-        headers: {
-          'apikey': SUPABASE_ANON_KEY,
-          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
-        }
-      });
-      const posts = await res.json();
-      const container = document.getElementById('posts-grid');
-      container.innerHTML = posts.map(post => `
-        <article class="post-card" onclick="location.href='post.html?id=${post.id}'">
-          ${post.image_url ? `<img src="${post.image_url}" alt="${post.title}" class="post-card-image" loading="lazy">` : ''}
-          <div class="post-card-content">
-            <div class="post-card-meta">
-              <span class="post-card-date">${new Date(post.published_at).toLocaleDateString('sv-SE')}</span>
-            </div>
-            <h2>${post.title}</h2>
-            <p>${post.ingress}</p>
-          </div>
+<script src="config.js"></script>
+<script>
+  async function loadPosts() {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/blog_posts?select=*&order=published_at.desc`, {
+      headers: {
+        'apikey': SUPABASE_ANON_KEY,
+        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+      }
+    });
+    const posts = await res.json();
+    const container = document.getElementById('posts-grid');
+    container.innerHTML = posts.map(post => `
+      <div class="list__item">
+        <article class="archive__item">
+          ${post.image_url ? `<div class="archive__item-teaser">
+            <img src="${post.image_url}" alt="${post.title}">
+          </div>` : ''}
+          <h2 class="archive__item-title">
+            <a href="post.html?id=${post.id}">${post.title}</a>
+          </h2>
+          <p class="archive__item-excerpt">${post.ingress}</p>
+          <p class="page__meta">
+            <time>${new Date(post.published_at).toLocaleDateString('sv-SE')}</time>
+          </p>
         </article>
-      `).join('');
-    }
+      </div>
+    `).join('');
+  }
 
-    loadPosts();
-  </script>
-</body>
-</html>
+  loadPosts();
+</script>
