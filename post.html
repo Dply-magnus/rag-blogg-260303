@@ -3,8 +3,78 @@ layout: default
 title: Inlägg
 ---
 
-<div id="post" class="page">
-  <p>Laddar...</p>
+<style>
+  .post-layout {
+    display: flex;
+    gap: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .post-main {
+    flex: 1;
+    min-width: 0;
+  }
+  .post-sidebar {
+    width: 280px;
+    flex-shrink: 0;
+  }
+  .post-sidebar h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+    border-bottom: 1px solid #e0e0e0;
+    padding-bottom: 0.5rem;
+  }
+  .post-sidebar ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .post-sidebar li {
+    margin-bottom: 0.6rem;
+  }
+  .post-sidebar li a {
+    font-size: 0.85rem;
+    color: #494e52;
+    text-decoration: none;
+  }
+  .post-sidebar li a:hover {
+    text-decoration: underline;
+  }
+  .post-sidebar li time {
+    display: block;
+    font-size: 0.75rem;
+    color: #999;
+  }
+  .post-sidebar .show-all {
+    display: inline-block;
+    margin-top: 0.75rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+  @media (max-width: 768px) {
+    .post-layout {
+      flex-direction: column;
+    }
+    .post-sidebar {
+      width: 100%;
+    }
+  }
+</style>
+
+<div class="post-layout">
+  <div class="post-main">
+    <div id="post" class="page">
+      <p>Laddar...</p>
+    </div>
+  </div>
+  <aside class="post-sidebar">
+    <h3>Senaste artiklarna</h3>
+    <ul id="recent-posts">
+      <li>Laddar...</li>
+    </ul>
+    <a href="{{ site.baseurl }}/" class="show-all">Visa alla →</a>
+  </aside>
 </div>
 
 <script src="{{ site.baseurl }}/config.js"></script>
@@ -24,29 +94,24 @@ title: Inlägg
     const slug = params.get('slug');
     const id = params.get('id');
 
-    let url;
-    if (id) {
-      url = `${SUPABASE_URL}/rest/v1/blog_posts?id=eq.${id}&select=*`;
-    } else {
-      url = `${SUPABASE_URL}/rest/v1/blog_posts?select=*`;
-    }
-
-    const res = await fetch(url, {
+    const allRes = await fetch(`${SUPABASE_URL}/rest/v1/blog_posts?select=*&order=published_at.desc`, {
       headers: {
         'apikey': SUPABASE_ANON_KEY,
         'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
       }
     });
-    const posts = await res.json();
+    const allPosts = await allRes.json();
 
-    const post = id ? posts[0] : posts.find(p => toSlug(p.title) === slug);
+    const post = id
+      ? allPosts.find(p => p.id === parseInt(id))
+      : allPosts.find(p => toSlug(p.title) === slug);
 
     if (!post) {
       document.getElementById('post').innerHTML = '<p>Inlägget hittades inte.</p>';
       return;
     }
 
-    document.title = post.title + ' | AI-blogg';
+    document.title = post.title + ' | Allt RAG';
 
     document.getElementById('post').innerHTML = `
       <article class="page" itemscope itemtype="https://schema.org/BlogPosting">
@@ -69,6 +134,18 @@ title: Inlägg
         </div>
       </article>
     `;
+
+    // Render recent posts sidebar (max 10, exclude current)
+    const recentPosts = allPosts
+      .filter(p => p.id !== post.id)
+      .slice(0, 10);
+
+    document.getElementById('recent-posts').innerHTML = recentPosts.map(p => `
+      <li>
+        <a href="{{ site.baseurl }}/post.html?slug=${toSlug(p.title)}">${p.title}</a>
+        <time>${new Date(p.published_at).toLocaleDateString('sv-SE')}</time>
+      </li>
+    `).join('');
   }
 
   loadPost();
