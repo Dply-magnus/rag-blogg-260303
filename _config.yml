@@ -4,6 +4,7 @@ plugins:
   - jekyll-include-cache
 
 title: Allt RAG
+logo: /assets/images/allt-rag-logo.png
 description: Tankar och insikter om artificiell intelligens
 locale: sv-SE
 baseurl: ""
