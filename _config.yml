@@ -6,8 +6,8 @@ plugins:
 title: Allt RAG
 description: Tankar och insikter om artificiell intelligens
 locale: sv-SE
-baseurl: /rag-blogg-260303
-url: https://dply-magnus.github.io
+baseurl: ""
+url: https://allt-rag.se
 
 minimal_mistakes_skin: default
 
