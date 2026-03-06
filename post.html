@@ -7,18 +7,44 @@ title: Inlägg
   <p>Laddar...</p>
 </div>
 
-<script src="config.js"></script>
+<script src="{{ site.baseurl }}/config.js"></script>
 <script>
+  function toSlug(str) {
+    return str
+      .toLowerCase()
+      .replace(/[åä]/g, 'a')
+      .replace(/ö/g, 'o')
+      .replace(/é/g, 'e')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-|-$/g, '');
+  }
+
   async function loadPost() {
-    const id = new URLSearchParams(window.location.search).get('id');
-    const res = await fetch(`${SUPABASE_URL}/rest/v1/blog_posts?id=eq.${id}&select=*`, {
+    const params = new URLSearchParams(window.location.search);
+    const slug = params.get('slug');
+    const id = params.get('id');
+
+    let url;
+    if (id) {
+      url = `${SUPABASE_URL}/rest/v1/blog_posts?id=eq.${id}&select=*`;
+    } else {
+      url = `${SUPABASE_URL}/rest/v1/blog_posts?select=*`;
+    }
+
+    const res = await fetch(url, {
       headers: {
         'apikey': SUPABASE_ANON_KEY,
         'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
       }
     });
     const posts = await res.json();
-    const post = posts[0];
+
+    const post = id ? posts[0] : posts.find(p => toSlug(p.title) === slug);
+
+    if (!post) {
+      document.getElementById('post').innerHTML = '<p>Inlägget hittades inte.</p>';
+      return;
+    }
 
     document.title = post.title + ' | AI-blogg';
 
