@@ -10,8 +10,18 @@ title: AI-blogg
   </div>
 </div>
 
-<script src="config.js"></script>
+<script src="{{ site.baseurl }}/config.js"></script>
 <script>
+  function toSlug(str) {
+    return str
+      .toLowerCase()
+      .replace(/[åä]/g, 'a')
+      .replace(/ö/g, 'o')
+      .replace(/é/g, 'e')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-|-$/g, '');
+  }
+
   async function loadPosts() {
     const res = await fetch(`${SUPABASE_URL}/rest/v1/blog_posts?select=*&order=published_at.desc`, {
       headers: {
@@ -28,7 +38,7 @@ title: AI-blogg
             <img src="${post.image_url}" alt="${post.title}">
           </div>` : ''}
           <h2 class="archive__item-title">
-            <a href="post.html?id=${post.id}">${post.title}</a>
+            <a href="{{ site.baseurl }}/post.html?slug=${toSlug(post.title)}">${post.title}</a>
           </h2>
           <p class="archive__item-excerpt">${post.ingress}</p>
           <p class="page__meta">
