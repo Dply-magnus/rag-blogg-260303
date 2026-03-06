@@ -3,7 +3,7 @@ plugins:
   - jekyll-remote-theme
   - jekyll-include-cache
 
-title: AI-blogg
+title: Allt RAG
 description: Tankar och insikter om artificiell intelligens
 locale: sv-SE
 baseurl: /rag-blogg-260303
